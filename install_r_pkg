@@ -1,0 +1,20 @@
+# Grab a recent version of R
+FROM rocker/r-ver:4.0.3
+
+# URL of the CRAN repository we'll install packages from
+ENV CRAN "https://cran.rstudio.com"
+
+# Static (?) URL pointing to the `remotes` package, useful for installing specific versions of R packages
+ENV RMT_PKG_URL "https://cran.r-project.org/src/contrib/Archive/remotes/remotes_2.1.1.tar.gz"
+
+# Install `remotes`
+# Since we specify a URL, we don't set the repos argument
+RUN R --vanilla -e "install.packages('${RMT_PKG_URL}', repos = NULL, type = 'source')"
+
+# Use `remotes` to install other packages
+# These commands as written do *not* install dependencies
+RUN R --vanilla -e "remotes::install_version('rprojroot', version = '2.0.2', repos = '${CRAN}')"
+RUN R --vanilla -e "remotes::install_version('here', version = '1.0.1', repos = '${CRAN}')"
+
+# Filler command to run on execution of the image
+CMD /bin/bash
